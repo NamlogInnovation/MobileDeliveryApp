@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mauiPopup:BasePopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MobileDeliveryApp.Helpers.PopUpPage.PopupPage"
+             xmlns:mauiPopup="clr-namespace:MauiPopup.Views;assembly=MauiPopup"
+             VerticalOptions="Center"
+             IsCloseOnBackgroundClick="False">
+    <Frame>
+        <HorizontalStackLayout>
+            <ActivityIndicator Color="#dc221f" IsRunning="True" HeightRequest="50" />
+            <Label Text="Checking, Please wait..." Margin="10,20"/>
+        </HorizontalStackLayout>
+    </Frame>
+</mauiPopup:BasePopupPage>
