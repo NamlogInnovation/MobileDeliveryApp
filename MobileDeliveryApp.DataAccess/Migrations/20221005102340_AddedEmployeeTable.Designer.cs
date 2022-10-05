@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MobileDeliveryApp.DataAccess.Database.DatabaseContext;
 
@@ -10,9 +11,10 @@ using MobileDeliveryApp.DataAccess.Database.DatabaseContext;
 namespace MobileDeliveryApp.DataAccess.Migrations
 {
     [DbContext(typeof(MobileDeliveryAppDbContext))]
-    partial class MobileDeliveryAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221005102340_AddedEmployeeTable")]
+    partial class AddedEmployeeTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.9");
@@ -33,10 +35,6 @@ namespace MobileDeliveryApp.DataAccess.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ScanTagToken")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

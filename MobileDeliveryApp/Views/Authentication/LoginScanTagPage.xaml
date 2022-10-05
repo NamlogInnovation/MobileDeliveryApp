@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MobileDeliveryApp.Views.Authentication.LoginPage"
+             x:Class="MobileDeliveryApp.Views.Authentication.LoginScanTagPage"
              xmlns:viewmodel="clr-namespace:MobileDeliveryApp.ViewModels.Authentication"
-             x:DataType="viewmodel:LoginViewModel"
-             Shell.NavBarIsVisible="False">
-
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="viewmodel:LoginScanTagViewModel"
+             Title="Login through tag">
     <Grid RowDefinitions="1*,8*,1*">
 
         <Frame BackgroundColor="#dc221f" Grid.Row="0" 
@@ -45,7 +45,7 @@
 
         <Frame BackgroundColor="White"
                Grid.Row="1" 
-               HeightRequest="600"
+               HeightRequest="300"
                Margin="20,-10,20,0"
                VerticalOptions="CenterAndExpand">
 
@@ -55,22 +55,16 @@
                 <Frame Padding="10" CornerRadius="0" Margin="0, 8">
                     <Grid ColumnDefinitions="25,*" ColumnSpacing="20">
                         <Image VerticalOptions="Center" Source="username_icon.png" HeightRequest="25" WidthRequest="25"/>
-                        <Entry x:Name="Username" VerticalOptions="Center" Placeholder="Username" Text="{Binding Username}" Grid.Column="1"/>
+                        <Entry x:Name="ScanTagEntry" VerticalOptions="Center" Placeholder="Scan tag" Text="{Binding ScanTagToken}" Grid.Column="1">
+                            <Entry.Behaviors>
+                                <toolkit:EventToCommandBehavior
+                                    EventName="Completed"
+                                    Command="{Binding LoginThroughTagScanCommand}"/>
+                            </Entry.Behaviors>
+                        </Entry>
                     </Grid>
                 </Frame>
-                <Frame  Padding="10"  CornerRadius="0">
-                    <Grid ColumnDefinitions="25,*" ColumnSpacing="20">
-                        <Image VerticalOptions="Center" Source="password_icon.png" HeightRequest="25" WidthRequest="25"/>
-                        <Entry x:Name="Password" VerticalOptions="Center" Placeholder="Password" IsPassword="True" Text="{Binding Password}" Grid.Column="1"/>
-                    </Grid>
-                </Frame>
-                <Button BackgroundColor="#dc221f" CornerRadius="10" HeightRequest="60" Text="Login" FontSize="20" 
-                        FontAttributes="Bold" Command="{Binding LoginCommand}"/>
-                <Label Text="OR" Margin="130, 30"></Label>
-                <Button Margin="0,0"  BackgroundColor="#dc221f" CornerRadius="10" HeightRequest="60" Text="Scan tag" FontSize="20" 
-                        FontAttributes="Bold" Command="{Binding GoToLoginScanTagePageCommand}"/>
             </VerticalStackLayout>
         </Frame>
     </Grid>
-
 </ContentPage>

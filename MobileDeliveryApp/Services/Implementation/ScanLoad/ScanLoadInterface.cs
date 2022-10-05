@@ -43,7 +43,7 @@ namespace MobileDeliveryApp.Services.Implementation.ScanLoad
                         waybillInfo = await _dbContext.WaybillInformation.Where(x => x.LoadID == loadNumberId).ToListAsync();
                     }
 
-                    if (waybillInfo is null)
+                    if (waybillInfo is null || waybillInfo.Count == 0)
                     {
                         await _authService.SetAuthToken();
 
@@ -65,7 +65,15 @@ namespace MobileDeliveryApp.Services.Implementation.ScanLoad
                                         await _dbContext.SaveChangesAsync();
                                     }
                                 }
+                                return true;
                             }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
                             return false;
                         }
                     }
@@ -74,7 +82,6 @@ namespace MobileDeliveryApp.Services.Implementation.ScanLoad
                         return true;
                     }
                 }
-                return false;
             }
             catch (Exception ex)
             {

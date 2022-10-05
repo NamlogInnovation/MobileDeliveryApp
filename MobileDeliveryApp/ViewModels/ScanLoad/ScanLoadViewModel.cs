@@ -5,6 +5,8 @@ using MobileDeliveryApp.Helpers.PopUpPage;
 using MobileDeliveryApp.Services.Contracts.Authentication;
 using MobileDeliveryApp.Services.Contracts.ScanLoad;
 using MobileDeliveryApp.Services.Implementation.Authentication;
+using MobileDeliveryApp.Views.ScanLoad;
+using MobileDeliveryApp.Views.WaybillInfomation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +40,11 @@ namespace MobileDeliveryApp.ViewModels.ScanLoad
             {
                 LoadMessage = string.Empty;
                 await PopupAction.ClosePopup();
-                await Shell.Current.DisplayAlert("Result", "Data has been retrieved successfully", "Ok");
+                await Shell.Current.GoToAsync($"{nameof(WayBillInfoPage)}", true, new Dictionary<string, object>
+                {
+                    {nameof(loadNumber), loadNumber }
+                });
+
             }
             else
             {

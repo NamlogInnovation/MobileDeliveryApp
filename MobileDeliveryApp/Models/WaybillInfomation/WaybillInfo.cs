@@ -9,6 +9,6 @@ namespace MobileDeliveryApp.Models.WaybillInfomation
 {
     public class WaybillInfo : BaseWaybillModel
     {
-
+        
     }
 }

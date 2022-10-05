@@ -15,6 +15,7 @@ namespace MobileDeliveryApp.DataAccess.Database.DatabaseContext
     public class MobileDeliveryAppDbContext : DbContext
     {
         public DbSet<WaybillInformation> WaybillInformation { get; set; }
+        public DbSet<Employee> Employee { get; set; }
         public MobileDeliveryAppDbContext()
         {
             SQLitePCL.Batteries_V2.Init();

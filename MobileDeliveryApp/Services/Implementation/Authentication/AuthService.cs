@@ -11,15 +11,25 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
+using MobileDeliveryApp.DataAccess.Database.Tables;
+using AutoMapper;
+using MobileDeliveryApp.DataAccess.Database.DatabaseContext;
+using MobileDeliveryApp.Models.WaybillInfomation;
+using Microsoft.EntityFrameworkCore;
 
 namespace MobileDeliveryApp.Services.Implementation.Authentication
 {
     public class AuthService : IAuthService
     {
+        private readonly IMapper _mapper;
+        public AuthService(IMapper _mapper)
+        {
+            this._mapper = _mapper;
+        }
         public async Task checkUserLoginDetails()
         {
             var token = await SecureStorage.GetAsync("Token");
-
             if (string.IsNullOrEmpty(token))
             {
                 await NavigationHelper.GoToLoginPage();
@@ -82,7 +92,6 @@ namespace MobileDeliveryApp.Services.Implementation.Authentication
         }
         public async Task SetAuthToken()
         {
-
             var token = await SecureStorage.GetAsync("Token");
             ApiService._MobileDeliveryApiClient.DefaultRequestHeaders.Add("ClientId", "LMSW!ndows@pp");
             ApiService._MobileDeliveryApiClient.DefaultRequestHeaders.Add("ClientSecret", "79C020A2-9B97-4736-B6B3-BBDB6DF32512");
@@ -97,6 +106,59 @@ namespace MobileDeliveryApp.Services.Implementation.Authentication
             ApiService._MobileDeliveryApiClient.DefaultRequestHeaders.Remove("ClientSecret");
         }
 
+        public string DescryptLoginScanTagToken(string key, string loginScanTagToken)
+        {
+            byte[] iv = new byte[16];
+            byte[] buffer = Convert.FromBase64String(loginScanTagToken);
 
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = iv;
+                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                using (MemoryStream memoryStream = new MemoryStream(buffer))
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader streamReader = new StreamReader((Stream)cryptoStream))
+                        {
+                            return streamReader.ReadToEnd();
+                        }
+                    }
+                }
+            }
+        }
+
+        public async Task<bool> LoginThroughScanTag(EmployeeModel employee)
+        {
+            try
+            {
+                using (var _dbContext = new MobileDeliveryAppDbContext())
+                {
+                    var employeeRecord = await _dbContext.Employee.Where(x => x.IdNumber == employee.IdNumber &&
+                    x.ScanTagToken == employee.ScanTagToken).FirstOrDefaultAsync();
+
+                    if (employeeRecord is not null)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        var mappedEmployeeModel = _mapper.Map<Employee>(employee);
+                        await _dbContext.Employee.AddAsync(mappedEmployeeModel);
+                        await _dbContext.SaveChangesAsync();
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+                return false;
+            }
+
+        }
     }
 }
+

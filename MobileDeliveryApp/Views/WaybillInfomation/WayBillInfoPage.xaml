@@ -2,11 +2,71 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MobileDeliveryApp.Views.WaybillInfomation.WayBillInfoPage"
-             Title="WayBillInfoPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             xmlns:model="clr-namespace:MobileDeliveryApp.Models.WaybillInfomation"
+             xmlns:viewmodel="clr-namespace:MobileDeliveryApp.ViewModels.WaybillInformation"
+             x:DataType="viewmodel:WayBillInfoViewModel"
+             Title="Waybill Information">
+
+    <Grid ColumnDefinitions="*" RowDefinitions="*" Padding="10">
+
+        <Frame BackgroundColor="#dc221f" Grid.Row="0" 
+               HorizontalOptions="EndAndExpand"
+               Padding="0" 
+               Margin="0, -810,-80,0"
+               HeightRequest="250" 
+               WidthRequest="250" CornerRadius="125">
+        </Frame>
+
+        <Frame BackgroundColor="#040404" Grid.Row="0" 
+               HorizontalOptions="EndAndExpand"
+               Padding="0" 
+               Margin="0, -800,-120,0"
+               HeightRequest="250" 
+               WidthRequest="250" CornerRadius="125">
+        </Frame>
+
+        <Frame BackgroundColor="#dc221f" Grid.Row="2"
+               VerticalOptions="EndAndExpand"
+               HorizontalOptions="StartAndExpand"
+               Padding="0" 
+               Margin="-90, 0, 0, -240"
+               HeightRequest="250" 
+               WidthRequest="250" CornerRadius="125">
+        </Frame>
+
+        <Frame BackgroundColor="#040404" Grid.Row="2" 
+               HorizontalOptions="StartAndExpand"
+                VerticalOptions="EndAndExpand"
+               Padding="0" 
+               Margin="0, 0, 0, -230"
+               HeightRequest="250" 
+               WidthRequest="250" CornerRadius="125">
+        </Frame>
+
+        <CollectionView ItemsSource="{Binding WaybillInfo}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="model:WaybillInfo">
+                    <Grid Padding="10">
+                        <Frame HeightRequest="220" Padding="10" BorderColor="Black" Opacity="10">
+                            <VerticalStackLayout Padding="10">
+                                <Label FontAttributes="Bold" TextColor="Blue" FontSize="Medium" Text="{Binding DeliveryType}"></Label>
+                                <Label FontAttributes="Bold" FontSize="Medium" Margin="0,20" Text="{Binding Customer}"></Label>
+                                <HorizontalStackLayout Margin="0,-5">
+                                    <Label FontAttributes="Bold" FontSize="Medium" Text="Waybill No: "></Label>
+                                    <Label FontSize="Medium" Text="{Binding WaybillNo}"></Label>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Margin="0,15">
+                                    <Label FontAttributes="Bold" FontSize="Medium" Text="Date: "></Label>
+                                    <Label FontSize="Medium" Text="{Binding Date}"></Label>
+                                </HorizontalStackLayout>
+                                <VerticalStackLayout>
+                                    <Label TextColor="Red" FontSize="Medium" Text="{Binding Completed}"></Label>
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
 </ContentPage>
