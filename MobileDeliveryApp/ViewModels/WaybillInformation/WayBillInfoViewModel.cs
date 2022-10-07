@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MobileDeliveryApp.Helpers;
 using MobileDeliveryApp.Models.WaybillInfomation;
 using MobileDeliveryApp.Services.Contracts.WayBillInfo;
 using System;
@@ -70,10 +71,7 @@ namespace MobileDeliveryApp.ViewModels.WaybillInformation
                         waybillNo = waybillInfo.WaybillNo;
                         date = waybillInfo.Date;
                         completedStatus = waybillInfo.Completed;
-                        
-                        
                     }
-
                 }
                 else
                 {
@@ -87,6 +85,11 @@ namespace MobileDeliveryApp.ViewModels.WaybillInformation
             }
         }
 
-
+        [RelayCommand]
+        async Task Logout()
+        {
+            SecureStorage.Remove("Token");
+            await NavigationHelper.GoToLoginPage();
+        }
     }
 }

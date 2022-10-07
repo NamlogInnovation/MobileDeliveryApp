@@ -1,4 +1,6 @@
-﻿using MobileDeliveryApp.Services.Contracts.Authentication;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MobileDeliveryApp.Services.Contracts.Authentication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,14 +9,20 @@ using System.Threading.Tasks;
 
 namespace MobileDeliveryApp.ViewModels.Authentication
 {
-    public class LandingPageViewModel
+    public partial class LandingPageViewModel : ObservableObject
     {
         private readonly IAuthService _authService;
         public LandingPageViewModel(IAuthService _authService)
         {
 
             this._authService = _authService;
-            _authService.checkUserLoginDetails();
+           
+        }
+
+        [RelayCommand]
+        public async Task CheckUserLoginDetails()
+        {
+            await _authService.checkUserLoginDetails();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MobileDeliveryApp.Views.Authentication;
+using MobileDeliveryApp.Views.LastScannedLoad;
 using MobileDeliveryApp.Views.ScanLoad;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,11 @@ namespace MobileDeliveryApp.Helpers
         public static async Task GoToScanLoadView()
         {
             await Shell.Current.GoToAsync($"{nameof(ScanLoadPage)}");
+        }
+
+        public static async Task GoToLastLoadScannedView()
+        {
+            await Shell.Current.GoToAsync($"{nameof(LastScannedLoadPage)}");
         }
     }
 }

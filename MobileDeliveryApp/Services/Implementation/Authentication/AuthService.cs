@@ -17,6 +17,10 @@ using AutoMapper;
 using MobileDeliveryApp.DataAccess.Database.DatabaseContext;
 using MobileDeliveryApp.Models.WaybillInfomation;
 using Microsoft.EntityFrameworkCore;
+using MobileDeliveryApp.Models.LastScannedLoad;
+using MobileDeliveryApp.Views.WaybillInfomation;
+using MobileDeliveryApp.Views.LastScannedLoad;
+using MauiPopup;
 
 namespace MobileDeliveryApp.Services.Implementation.Authentication
 {
@@ -29,23 +33,63 @@ namespace MobileDeliveryApp.Services.Implementation.Authentication
         }
         public async Task checkUserLoginDetails()
         {
-            var token = await SecureStorage.GetAsync("Token");
-            if (string.IsNullOrEmpty(token))
+            try
             {
-                await NavigationHelper.GoToLoginPage();
-
-            }
-            else
-            {
-                var jsonToken = new JwtSecurityTokenHandler().ReadToken(token) as JwtSecurityToken;
-                if (jsonToken.ValidTo < DateTime.UtcNow)
+                var token = await SecureStorage.GetAsync("Token");
+                if (string.IsNullOrEmpty(token))
                 {
-                    SecureStorage.Remove("Token");
                     await NavigationHelper.GoToLoginPage();
                 }
                 else
                 {
+                    var jsonToken = new JwtSecurityTokenHandler().ReadToken(token) as JwtSecurityToken;
+                    var loggedInUserFromToken = jsonToken.Claims.FirstOrDefault(x => x.Type.Equals("displayname")).Value;
+
+                    if (jsonToken.ValidTo < DateTime.UtcNow)
+                    {
+                        SecureStorage.Remove("Token");
+                        await NavigationHelper.GoToLoginPage();
+                    }
+                    else
+                    {
+                        await GetLastLoadAndUserDetails(loggedInUserFromToken);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+                return;
+            }
+
+        }
+
+        private async Task GetLastLoadAndUserDetails(string loggedInUserDriver)
+        {
+            var lastScannedLoadModel = new LastScannedLoadModel();
+            using (var _dbContext = new MobileDeliveryAppDbContext())
+            {
+                var lastScannedLoad = await _dbContext.WaybillInformation
+                    .OrderByDescending(x => x.Id)
+                    .Select(x => x.LoadID)
+                    .FirstOrDefaultAsync();
+
+                if (lastScannedLoad is null)
+                {
+                    //Incase there is a popup action that is still in use
+                    await PopupAction.ClosePopup();
                     await NavigationHelper.GoToScanLoadView();
+                }
+                else
+                {
+                    lastScannedLoadModel.LoggedInDriver = loggedInUserDriver;
+                    lastScannedLoadModel.LastScannedLoadNumber = (int)lastScannedLoad;
+                    //Incase there is a popup action that is still in use
+                    await PopupAction.ClosePopup();
+                    await Shell.Current.GoToAsync($"{nameof(LastScannedLoadPage)}", true, new Dictionary<string, object>
+                    {
+                        {nameof(lastScannedLoadModel), lastScannedLoadModel }
+                    });
                 }
             }
         }
@@ -65,24 +109,28 @@ namespace MobileDeliveryApp.Services.Implementation.Authentication
                         Username = username.Trim(),
                         Password = password.Trim()
                     };
-
                     var response = await ApiService._MobileDeliveryApiClient.PostAsJsonAsync("/api/Accounts/Authenticate", loginModel);
-
                     if (response.IsSuccessStatusCode)
                     {
                         var authResponse = JsonConvert.DeserializeObject<AuthResponseModel>(await response.Content.ReadAsStringAsync());
-                        await SecureStorage.SetAsync("Token", authResponse.data.jwToken);
-                        var jsonToken = new JwtSecurityTokenHandler().ReadToken(authResponse.data.jwToken) as JwtSecurityToken;
-                        App.UserInfo = new UserInfo()
+                        if (authResponse.data.jwToken is null)
                         {
-                            Username = username,
-                            Role = jsonToken.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role))?.Value
-                        };
-
-                        return true;
+                            return false;
+                        }
+                        else
+                        {
+                            await SecureStorage.SetAsync("Token", authResponse.data.jwToken);
+                            var jsonToken = new JwtSecurityTokenHandler().ReadToken(authResponse.data.jwToken) as JwtSecurityToken;
+                            var loggedInUserFromToken = jsonToken.Claims.FirstOrDefault(x => x.Type.Equals("displayname")).Value;
+                            await GetLastLoadAndUserDetails(loggedInUserFromToken);
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
-                return false;
             }
             catch (Exception ex)
             {
@@ -108,26 +156,35 @@ namespace MobileDeliveryApp.Services.Implementation.Authentication
 
         public string DescryptLoginScanTagToken(string key, string loginScanTagToken)
         {
-            byte[] iv = new byte[16];
-            byte[] buffer = Convert.FromBase64String(loginScanTagToken);
-
-            using (Aes aes = Aes.Create())
+            try
             {
-                aes.Key = Encoding.UTF8.GetBytes(key);
-                aes.IV = iv;
-                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+                byte[] iv = new byte[16];
+                byte[] buffer = Convert.FromBase64String(loginScanTagToken);
 
-                using (MemoryStream memoryStream = new MemoryStream(buffer))
+                using (Aes aes = Aes.Create())
                 {
-                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
+                    aes.Key = Encoding.UTF8.GetBytes(key);
+                    aes.IV = iv;
+                    ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                    using (MemoryStream memoryStream = new MemoryStream(buffer))
                     {
-                        using (StreamReader streamReader = new StreamReader((Stream)cryptoStream))
+                        using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
                         {
-                            return streamReader.ReadToEnd();
+                            using (StreamReader streamReader = new StreamReader((Stream)cryptoStream))
+                            {
+                                return streamReader.ReadToEnd();
+                            }
                         }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+                return null;
+            }
+
         }
 
         public async Task<bool> LoginThroughScanTag(EmployeeModel employee)
@@ -141,6 +198,7 @@ namespace MobileDeliveryApp.Services.Implementation.Authentication
 
                     if (employeeRecord is not null)
                     {
+                        await GetLastLoadAndUserDetails(employeeRecord.Firstname + " " + employeeRecord.LastName);
                         return true;
                     }
                     else
@@ -148,6 +206,7 @@ namespace MobileDeliveryApp.Services.Implementation.Authentication
                         var mappedEmployeeModel = _mapper.Map<Employee>(employee);
                         await _dbContext.Employee.AddAsync(mappedEmployeeModel);
                         await _dbContext.SaveChangesAsync();
+                        await GetLastLoadAndUserDetails(mappedEmployeeModel.Firstname + " " + mappedEmployeeModel.LastName);
                         return true;
                     }
                 }

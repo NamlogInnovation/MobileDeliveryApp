@@ -5,6 +5,7 @@ using MobileDeliveryApp.Helpers;
 using MobileDeliveryApp.Helpers.PopUpPage;
 using MobileDeliveryApp.Services.Contracts.Authentication;
 using MobileDeliveryApp.Views.Authentication;
+using MobileDeliveryApp.Views.LastScannedLoad;
 using MobileDeliveryApp.Views.ScanLoad;
 using System;
 using System.Collections.Generic;
@@ -36,12 +37,7 @@ namespace MobileDeliveryApp.ViewModels.Authentication
         {
             await PopupAction.DisplayPopup(new PopupPage());
             var loginResponse = await _authService.Login(username, password);
-            if (loginResponse == true)
-            {
-                await PopupAction.ClosePopup();
-                await Shell.Current.GoToAsync($"{nameof(ScanLoadPage)}", true);
-            }
-            else
+            if (loginResponse == false)
             {
                 await PopupAction.ClosePopup();
                 LoginMessage = "Invalid username or password";
@@ -49,7 +45,12 @@ namespace MobileDeliveryApp.ViewModels.Authentication
                 await AuthenticationMessages.DisplayLoginMessage("Invalid Login Attempt. Please try again. " +
                     "If the problem persists try to login by scanning the QR code on your tag otherwise contact IT support");
             }
-
+            else
+            {
+                Username = String.Empty;
+                Password = String.Empty;
+                return;
+            }
         }
 
         [RelayCommand]

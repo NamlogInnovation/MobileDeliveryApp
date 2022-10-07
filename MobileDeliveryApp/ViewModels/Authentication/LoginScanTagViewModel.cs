@@ -40,18 +40,18 @@ namespace MobileDeliveryApp.ViewModels.Authentication
             employeeLoggedIn.ScanTagToken = scanTagToken;
 
             var loginResponse = await _authService.LoginThroughScanTag(employeeLoggedIn);
-            if (loginResponse == true)
-            {
-                await PopupAction.ClosePopup();
-                await Shell.Current.GoToAsync($"{nameof(ScanLoadPage)}", true);
-            }
-            else
+            if (loginResponse == false)
             {
                 await PopupAction.ClosePopup();
                 LoginMessage = "Invalid scan or Unauthorized user";
                 ScanTagToken = string.Empty;
                 await AuthenticationMessages.DisplayLoginMessage("Invalid Login Attempt. Please try again. " +
                     "If the problem persists contact IT support");
+            }
+            else
+            {
+                ScanTagToken = string.Empty;
+                return;
             }
 
         }

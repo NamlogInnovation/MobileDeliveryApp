@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using MobileDeliveryApp.DataAccess.Database.Tables;
 using MobileDeliveryApp.DataAccess.Database.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
+using MobileDeliveryApp.Models.LastScannedLoad;
 
 namespace MobileDeliveryApp.Services.Implementation.ScanLoad
 {
@@ -27,6 +28,8 @@ namespace MobileDeliveryApp.Services.Implementation.ScanLoad
             this._authService = _authService;
             this._mapper = _mapper;
         }
+
+
         public async Task<bool> ScanLoad(int? loadNumberId)
         {
             try

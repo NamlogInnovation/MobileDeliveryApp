@@ -1,4 +1,5 @@
 ﻿using MobileDeliveryApp.Views.Authentication;
+using MobileDeliveryApp.Views.LastScannedLoad;
 using MobileDeliveryApp.Views.ScanLoad;
 using MobileDeliveryApp.Views.WaybillInfomation;
 
@@ -13,6 +14,8 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ScanLoadPage), typeof(ScanLoadPage));
         Routing.RegisterRoute(nameof(WayBillInfoPage), typeof(WayBillInfoPage));
         Routing.RegisterRoute(nameof(LoginScanTagPage), typeof(LoginScanTagPage));
+        Routing.RegisterRoute(nameof(LastScannedLoadPage), typeof(LastScannedLoadPage));
+
 
 
 

@@ -76,6 +76,9 @@
     <MauiXaml Update="Views\Authentication\LoginScanTagPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="Views\LastScannedLoad\LastScannedLoadPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Views\ScanLoad\ScanLoadPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>

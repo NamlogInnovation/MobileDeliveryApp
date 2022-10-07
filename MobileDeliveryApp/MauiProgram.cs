@@ -7,9 +7,11 @@ using MobileDeliveryApp.Services.Implementation.ScanLoad;
 using MobileDeliveryApp.Services.Implementation.WaybillInfo;
 using MobileDeliveryApp.Services.Mappings;
 using MobileDeliveryApp.ViewModels.Authentication;
+using MobileDeliveryApp.ViewModels.LastScannedLoad;
 using MobileDeliveryApp.ViewModels.ScanLoad;
 using MobileDeliveryApp.ViewModels.WaybillInformation;
 using MobileDeliveryApp.Views.Authentication;
+using MobileDeliveryApp.Views.LastScannedLoad;
 using MobileDeliveryApp.Views.ScanLoad;
 using MobileDeliveryApp.Views.WaybillInfomation;
 
@@ -36,10 +38,12 @@ public static class MauiProgram
         builder.Services.AddSingleton<ScanLoadPage>();
         builder.Services.AddSingleton<LoginScanTagPage>();
         builder.Services.AddSingleton<LoginViewModel>();
-        builder.Services.AddSingleton<LoginScanTagViewModel>();
+        builder.Services.AddTransient<LoginScanTagViewModel>();
         builder.Services.AddSingleton<ScanLoadViewModel>();
+        builder.Services.AddSingleton<LastScannedLoadPage>();
+        builder.Services.AddSingleton<LastScannedLoadViewModel>();
         builder.Services.AddTransient<WayBillInfoPage>();
-        builder.Services.AddSingleton<LandingPageViewModel>();
+        builder.Services.AddTransient<LandingPageViewModel>();
         builder.Services.AddTransient<WayBillInfoViewModel>();
         builder.Services.AddTransient<IAuthService, AuthService>();
         builder.Services.AddTransient<IScanLoadInterface, ScanLoadInterface>();

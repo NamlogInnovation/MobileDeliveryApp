@@ -7,7 +7,8 @@
              x:DataType="viewmodel:WayBillInfoViewModel"
              Title="Waybill Information">
 
-    <Grid ColumnDefinitions="*" RowDefinitions="*" Padding="10">
+
+    <Grid ColumnDefinitions="*,*" RowDefinitions="*, Auto" Padding="10">
 
         <Frame BackgroundColor="#dc221f" Grid.Row="0" 
                HorizontalOptions="EndAndExpand"
@@ -25,25 +26,10 @@
                WidthRequest="250" CornerRadius="125">
         </Frame>
 
-        <Frame BackgroundColor="#dc221f" Grid.Row="2"
-               VerticalOptions="EndAndExpand"
-               HorizontalOptions="StartAndExpand"
-               Padding="0" 
-               Margin="-90, 0, 0, -240"
-               HeightRequest="250" 
-               WidthRequest="250" CornerRadius="125">
-        </Frame>
+        
 
-        <Frame BackgroundColor="#040404" Grid.Row="2" 
-               HorizontalOptions="StartAndExpand"
-                VerticalOptions="EndAndExpand"
-               Padding="0" 
-               Margin="0, 0, 0, -230"
-               HeightRequest="250" 
-               WidthRequest="250" CornerRadius="125">
-        </Frame>
 
-        <CollectionView ItemsSource="{Binding WaybillInfo}" SelectionMode="None">
+        <CollectionView ItemsSource="{Binding WaybillInfo}" SelectionMode="None" Grid.ColumnSpan="2">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="model:WaybillInfo">
                     <Grid Padding="10">
@@ -68,5 +54,9 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+        <Button BackgroundColor="#dc221f" CornerRadius="10" HeightRequest="60" Text="Logout" FontSize="20" 
+                        FontAttributes="Bold" Command="{Binding LogoutCommand}" Grid.Row="1" Grid.Column="0"/>
     </Grid>
+
+
 </ContentPage>

@@ -26,7 +26,7 @@ namespace MobileDeliveryApp.ViewModels.ScanLoad
         }
 
         [ObservableProperty]
-        int? loadNumber = null;
+        int? loadNumber;
 
         [ObservableProperty]
         string loadMessage;
